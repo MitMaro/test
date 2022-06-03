@@ -1,0 +1,17 @@
+name: My Name
+description: 
+body:
+- type: markdown
+  attributes:
+    value: |
+
+      Billing ATC: For legacy rate cards, see this [runbook entry][runbook_legacy]. For everything else, see [runbook entry][runbook].
+
+      /cc @MitMaro
+
+      If you have any questions feel free to reach out in the [#channel][runbook] channel on Slack.
+
+      [board]: https://github.com/orgs/1
+      [runbook]: https://github.com/orgs/2
+      [runbook_legacy]: https://github.com/orgs/3
+      
