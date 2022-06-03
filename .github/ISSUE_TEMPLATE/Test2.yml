@@ -1,11 +1,18 @@
 name: My Name
 description: Description
 body:
+- type: textarea
+  attributes:
+    label: Which?
+    description: Enter ID(s) here
+    placeholder: |
+      Name #1 | 101
+      Name #2 | 102
 - type: markdown
   attributes:
     value: |
 
-      Billing ATC: For legacy rate cards, see this [runbook entry][runbook_legacy]. For everything else, see [runbook entry][runbook].
+      See this [runbook entry][runbook_legacy]. For everything else, see [runbook entry][runbook].
 
       /cc @MitMaro
 
