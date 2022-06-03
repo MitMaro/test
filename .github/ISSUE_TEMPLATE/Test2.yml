@@ -8,9 +8,9 @@ body:
     placeholder: |
       Name #1 | 101
       Name #2 | 102
-- type: markdown
+- type: textarea
   attributes:
-    value: |
+    description: |
 
       See this [runbook entry][runbook_legacy]. For everything else, see [runbook entry][runbook].
 
@@ -21,4 +21,4 @@ body:
       [board]: https://github.com/orgs/1
       [runbook]: https://github.com/orgs/2
       [runbook_legacy]: https://github.com/orgs/3
-      
+        
