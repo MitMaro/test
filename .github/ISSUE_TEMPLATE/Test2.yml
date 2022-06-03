@@ -11,7 +11,7 @@ body:
 - type: textarea
   attributes:
     label: ATC Instructions
-    description: ATC Instructions
+    description: Instructions for the developer for handling this issue. **Please do not change**
     value: |
 
       See this [runbook entry][runbook_legacy]. For everything else, see [runbook entry][runbook].
