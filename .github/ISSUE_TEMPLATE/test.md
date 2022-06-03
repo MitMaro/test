@@ -2,7 +2,7 @@
 name: Test
 about: Test
 title: ''
-labels: Test, Multi Word
+labels: Multi Word, Test
 assignees: ''
 
 ---
