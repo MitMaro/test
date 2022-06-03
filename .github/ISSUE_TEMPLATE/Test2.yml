@@ -10,8 +10,9 @@ body:
       Name #2 | 102
 - type: textarea
   attributes:
-   label: ATC Instructions
-    description: |
+    label: ATC Instructions
+    description: ATC Instructions
+    value: |
 
       See this [runbook entry][runbook_legacy]. For everything else, see [runbook entry][runbook].
 
