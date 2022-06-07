@@ -11,8 +11,8 @@ body:
 - type: checkboxes
   attributes:
     label: Which should apply?
-    description: |
-      Description
+    description:
+      Description: foobar
     options:
       - label: AAA
         required: false
