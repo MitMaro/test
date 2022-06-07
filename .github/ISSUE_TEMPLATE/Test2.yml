@@ -8,6 +8,20 @@ body:
     placeholder: |
       Name #1 | 101
       Name #2 | 102
+- type: checkboxes
+  attributes:
+    label: Which should apply?
+    description: |
+      Description
+    options:
+      - label: AAA
+        required: false
+      - label: BBBB
+        required: false
+      - label: CCCC
+        required: false
+      - label: EEEE
+        required: false
 - type: textarea
   attributes:
     label: ATC Instructions
