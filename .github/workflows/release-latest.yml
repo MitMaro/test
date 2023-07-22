@@ -5,9 +5,23 @@ on:
         branches:
             - master
 jobs:
+  update-latest-tag:
+    runs-on: ubuntu-latest
+    name: Update Latest Tag
+    env:
+      TARGET_RELEASE_ID: 113191004
+      GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      REPOSITORY: "MitMaro/test"
+      DEFAULT_BRANCH: "master"
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Update Tag and Title"
+        run: "./.github/scripts/update-tag.bash"
+
   ubuntu:
     name: Ubuntu
     runs-on: ubuntu-latest
+    needs: update-latest-tag
     timeout-minutes: 10
     env:
         TARGET_RELEASE_ID: 113191004
@@ -37,6 +51,7 @@ jobs:
       - name: Upload
         uses: ncipollo/release-action@v1
         with:
+          tag: latest
           artifacts: "target/release/github-testing"
           artifactContentType: "application/vnd.debian.binary-package"
           replacesArtifacts: true
