@@ -98,3 +98,4 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
+          
