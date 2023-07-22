@@ -74,14 +74,6 @@ jobs:
         with:
           toolchain: nightly
       - name: "Build"
-        run: cargo build --features dev --release
-      - name: Upload
-        env:
-            FILE_PATH: "target/release/interactive-rebase-tool"
-            ASSET_NAME: macos-interactive-rebase-tool
-            CONTENT_TYPE: "application/x-mach-binary"
-        run: "./.github/scripts/push-latest-release.bash"
-      - name: "Build"
         run: |
           cargo build --release
           cp target/release/github-testing target/release/macos-interactive-rebase-tool
@@ -99,3 +91,33 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    needs: update-latest-tag
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: "Build"
+        run: "cargo rustc --target x86_64-pc-windows-msvc --release --bin interactive-rebase-tool"
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          allowUpdates: true
+          artifacts: "target/release/interactive-rebase-tool"
+          artifactContentType: "application/x-mach-binary"
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          makeLatest: false
+          prerelease: true
+          updateOnlyUnreleased: true
+      - name: "Upload Release"
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/x86_64-pc-windows-msvc/release/interactive-rebase-tool.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
