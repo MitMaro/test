@@ -23,26 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-latest-tag
     timeout-minutes: 10
-    env:
-        TARGET_RELEASE_ID: 113191004
-        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        REPOSITORY: "MitMaro/test"
-        DEFAULT_BRANCH: "master"
     steps:
       - uses: actions/checkout@v3
-#      - name: "System Setup"
-#        run: |
-#          apt-get update;
-#          apt-get --assume-yes -f install curl build-essential pkg-config;
-#        env:
-#          DEBIAN_FRONTEND: noninteractive
-#          TZ: "America/St_Johns"
-#      - uses: dtolnay/rust-toolchain@stable
-#      - uses: baptiste0928/cargo-install@v2
-#        with:
-#          crate: cargo-deb
-#      - name: "Build Deb"
-#        run: cargo +stable deb --output "target/debian/git-interactive-rebase-tool-ubuntu_amd64.deb" -- --features dev
       - name: "Build"
         run: cargo build --release
       - name: Upload
@@ -109,6 +91,32 @@ jobs:
           allowUpdates: true
           artifacts: "target/x86_64-pc-windows-msvc/release/interactive-rebase-tool.exe"
           artifactContentType: "application/x-mach-binary"
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          makeLatest: false
+          prerelease: true
+          updateOnlyUnreleased: true
+  arch:
+    name: Arch Latest
+    runs-on: ubuntu-latest
+    needs: update-latest-tag
+    container:
+      image: 'docker://rust:alpine'
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Build"
+        run: |
+          cargo build --release
+          cp target/release/interactive-rebase-tool target/release/arch-interactive-rebase-tool
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          allowUpdates: true
+          artifacts: "target/release/arch-interactive-rebase-tool"
+          artifactContentType: "application/vnd.debian.binary-package"
           replacesArtifacts: true
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
