@@ -44,15 +44,11 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
-  macos:
-    name: MacOS Latest
+  macos-x86:
+    name: MacOS x86 Latest
     runs-on: macos-latest
     timeout-minutes: 10
     needs: update-latest-tag
-    env:
-        TARGET_RELEASE_ID: 18843342
-        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        REPOSITORY: "MitMaro/git-interactive-rebase-tool"
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@nightly
@@ -61,13 +57,43 @@ jobs:
       - name: "Build"
         run: |
           cargo build --release
-          cp target/release/interactive-rebase-tool target/release/macos-interactive-rebase-tool
+          cp target/release/interactive-rebase-tool target/release/macos-x86-interactive-rebase-tool
       - name: Upload
         uses: ncipollo/release-action@v1
         with:
           tag: latest
           allowUpdates: true
-          artifacts: "target/release/macos-interactive-rebase-tool"
+          artifacts: "target/release/macos-x86-interactive-rebase-tool"
+          artifactContentType: "application/x-mach-binary"
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          makeLatest: false
+          prerelease: true
+          updateOnlyUnreleased: true
+
+  macos-arm:
+    name: MacOS ARM Latest
+    runs-on: macos-latest
+    timeout-minutes: 10
+    needs: update-latest-tag
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          toolchain: nightly
+          targets: aarch64-apple-darwin
+      - name: "Build"
+        run: |
+          cargo build --release
+          cp target/release/interactive-rebase-tool target/release/macos-arm-interactive-rebase-tool
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          allowUpdates: true
+          artifacts: "target/release/macos-arm-interactive-rebase-tool"
           artifactContentType: "application/x-mach-binary"
           replacesArtifacts: true
           omitBodyDuringUpdate: true
@@ -101,6 +127,7 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
+
   alpine:
     name: Alpine Latest
     runs-on: ubuntu-latest
@@ -109,6 +136,10 @@ jobs:
       image: 'docker://rust:alpine'
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
@@ -138,6 +169,8 @@ jobs:
       image: 'docker://archlinux:latest'
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          pacman -Sy base-devel
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
