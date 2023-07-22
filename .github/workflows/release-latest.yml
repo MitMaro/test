@@ -125,13 +125,13 @@ jobs:
       - name: "Build"
         run: |
           cargo build --target aarch64-apple-darwin --release
-          cp target/release/interactive-rebase-tool target/release/macos-arm-interactive-rebase-tool
+          cp target/aarch64-apple-darwin/release/interactive-rebase-tool target/aarch64-apple-darwin/release/macos-arm-interactive-rebase-tool
       - name: Upload
         uses: ncipollo/release-action@v1
         with:
           tag: latest
           allowUpdates: true
-          artifacts: "target/release/macos-arm-interactive-rebase-tool"
+          artifacts: "target/aarch64-apple-darwin/release/macos-arm-interactive-rebase-tool"
           replacesArtifacts: true
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
@@ -234,6 +234,8 @@ jobs:
       image: 'docker://fedora:latest'
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          dnf install curl dnf-plugins-core cmake gcc clang make -y
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
