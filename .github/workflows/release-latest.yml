@@ -2,8 +2,8 @@ name: Release Latest
 
 on:
     push:
-        tags:
-            - latest
+        branches:
+            - master
 jobs:
   ubuntu:
     name: Ubuntu
@@ -13,8 +13,11 @@ jobs:
         TARGET_RELEASE_ID: 113191004
         GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         REPOSITORY: "MitMaro/test"
+        DEFAULT_BRANCH: "master"
     steps:
       - uses: actions/checkout@v3
+      - name: "Update Tag and Title"
+        run: "./.github/scripts/update-tag.bash"
       - uses: Swatinem/rust-cache@v2
 #      - name: "System Setup"
 #        run: |
