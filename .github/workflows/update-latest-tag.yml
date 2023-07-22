@@ -1,0 +1,21 @@
+name: Release Latest
+
+on:
+    push:
+        branches:
+            - master
+jobs:
+  ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+        TARGET_RELEASE_ID: 113191004
+        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        REPOSITORY: "MitMaro/test"
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Update Tag and Title"
+        env:
+          DEFAULT_BRANCH: "master"
+        run: "./.github/scripts/update-tag.bash"
