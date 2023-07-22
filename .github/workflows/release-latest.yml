@@ -50,7 +50,7 @@ jobs:
         with:
           tag: latest
           allowUpdates: true
-          artifacts: "target/release/github-testing"
+          artifacts: "target/release/interactive-rebase-tool"
           artifactContentType: "application/vnd.debian.binary-package"
           replacesArtifacts: true
           omitBodyDuringUpdate: true
@@ -76,7 +76,7 @@ jobs:
       - name: "Build"
         run: |
           cargo build --release
-          cp target/release/github-testing target/release/macos-interactive-rebase-tool
+          cp target/release/interactive-rebase-tool target/release/macos-interactive-rebase-tool
       - name: Upload
         uses: ncipollo/release-action@v1
         with:
@@ -93,6 +93,7 @@ jobs:
           updateOnlyUnreleased: true
 
   windows:
+    name: Windows Latest
     runs-on: windows-latest
     timeout-minutes: 10
     needs: update-latest-tag
@@ -106,7 +107,7 @@ jobs:
         with:
           tag: latest
           allowUpdates: true
-          artifacts: "target/release/interactive-rebase-tool"
+          artifacts: "target/x86_64-pc-windows-msvc/release/interactive-rebase-tool.exe"
           artifactContentType: "application/x-mach-binary"
           replacesArtifacts: true
           omitBodyDuringUpdate: true
@@ -115,9 +116,3 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
-      - name: "Upload Release"
-        uses: softprops/action-gh-release@v1
-        with:
-          files: target/x86_64-pc-windows-msvc/release/interactive-rebase-tool.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
