@@ -19,7 +19,7 @@ jobs:
         run: "./.github/scripts/update-tag.bash"
 
   ubuntu:
-    name: Ubuntu
+    name: Ubuntu Latest
     runs-on: ubuntu-latest
     needs: update-latest-tag
     timeout-minutes: 10
@@ -59,24 +59,42 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
-#  macos:
-#    name: MacOS
-#    runs-on: macos-latest
-#    timeout-minutes: 10
-#    env:
-#        TARGET_RELEASE_ID: 18843342
-#        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-#        REPOSITORY: "MitMaro/git-interactive-rebase-tool"
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: dtolnay/rust-toolchain@nightly
-#        with:
-#          toolchain: nightly
-#      - name: "Build"
-#        run: cargo build --features dev --release
-#      - name: Upload
-#        env:
-#            FILE_PATH: "target/release/interactive-rebase-tool"
-#            ASSET_NAME: macos-interactive-rebase-tool
-#            CONTENT_TYPE: "application/x-mach-binary"
-#        run: "./.github/scripts/push-latest-release.bash"
+  macos:
+    name: MacOS Latest
+    runs-on: macos-latest
+    timeout-minutes: 10
+    env:
+        TARGET_RELEASE_ID: 18843342
+        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        REPOSITORY: "MitMaro/git-interactive-rebase-tool"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          toolchain: nightly
+      - name: "Build"
+        run: cargo build --features dev --release
+      - name: Upload
+        env:
+            FILE_PATH: "target/release/interactive-rebase-tool"
+            ASSET_NAME: macos-interactive-rebase-tool
+            CONTENT_TYPE: "application/x-mach-binary"
+        run: "./.github/scripts/push-latest-release.bash"
+      - name: "Build"
+        run: |
+          cargo build  --features dev --release
+          cp target/release/github-testing target/release/macos-interactive-rebase-tool
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          allowUpdates: true
+          artifacts: "target/release/macos-interactive-rebase-tool"
+          artifactContentType: "application/x-mach-binary"
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          makeLatest: false
+          prerelease: true
+          updateOnlyUnreleased: true
