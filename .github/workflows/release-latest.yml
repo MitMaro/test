@@ -63,6 +63,7 @@ jobs:
     name: MacOS Latest
     runs-on: macos-latest
     timeout-minutes: 10
+    needs: update-latest-tag
     env:
         TARGET_RELEASE_ID: 18843342
         GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
@@ -82,7 +83,7 @@ jobs:
         run: "./.github/scripts/push-latest-release.bash"
       - name: "Build"
         run: |
-          cargo build  --features dev --release
+          cargo build --release
           cp target/release/github-testing target/release/macos-interactive-rebase-tool
       - name: Upload
         uses: ncipollo/release-action@v1
@@ -98,4 +99,3 @@ jobs:
           makeLatest: false
           prerelease: true
           updateOnlyUnreleased: true
-          
