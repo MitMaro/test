@@ -18,6 +18,43 @@ jobs:
       - name: "Update Tag and Title"
         run: "./.github/scripts/update-tag.bash"
 
+  debian:
+    name: Ubuntu Latest
+    runs-on: ubuntu-latest
+    needs: update-latest-tag
+    timeout-minutes: 10
+    container:
+      image: 'docker://debian:sid-slim'
+    steps:
+      - uses: actions/checkout@v3
+      - name: "System Setup"
+        run: |
+          apt-get update;
+          apt-get --assume-yes -f install curl build-essential pkg-config;
+        env:
+          DEBIAN_FRONTEND: noninteractive
+          TZ: "America/St_Johns"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+      - name: "Build"
+        run: |
+          cargo build --release
+          cp target/release/interactive-rebase-tool target/release/debian-interactive-rebase-tool
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          allowUpdates: true
+          artifacts: "target/release/debian-interactive-rebase-tool"
+          artifactContentType: "application/vnd.debian.binary-package"
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          makeLatest: false
+          prerelease: true
+          updateOnlyUnreleased: true
   ubuntu:
     name: Ubuntu Latest
     runs-on: ubuntu-latest
@@ -29,13 +66,15 @@ jobs:
         with:
           toolchain: nightly
       - name: "Build"
-        run: cargo build --release
+        run: |
+          cargo build --release
+          cp target/release/interactive-rebase-tool target/release/ubuntu-interactive-rebase-tool
       - name: Upload
         uses: ncipollo/release-action@v1
         with:
           tag: latest
           allowUpdates: true
-          artifacts: "target/release/interactive-rebase-tool"
+          artifacts: "target/release/ubuntu-interactive-rebase-tool"
           artifactContentType: "application/vnd.debian.binary-package"
           replacesArtifacts: true
           omitBodyDuringUpdate: true
@@ -166,11 +205,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-latest-tag
     container:
-      image: 'docker://archlinux:latest'
+      image: 'docker://archlinux:base-devel'
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          pacman -Sy base-devel
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
