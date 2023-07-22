@@ -1,0 +1,113 @@
+name: Pull Request
+
+on:
+  pull_request:
+  # run CI/CD against master as well, to generate cache
+  push:
+    branches:
+      - xmaster
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-make
+      - name: Test
+        run: cargo make test
+      - name: Build Release
+        run: cargo make build --release
+      - name: Run
+        run: cargo run --release -- --version
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-make
+      - run: cargo make lint-stable
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo doc --all-features --workspace
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-make
+      - run: cargo make format
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-tarpaulin
+      - name: Run cargo-tarpaulin
+        run: |
+          cargo +nightly tarpaulin --workspace --all-features --ignore-tests --line --output-dir coverage --timeout 10 --out Lcov
+      - name: Post to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: "coverage/lcov.info"
+  macos:
+    name: macos
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-make
+      - name: Test
+        run: cargo make test
+      - name: Build Release
+        run: cargo make build --release
+      - name: Run
+        run: cargo run --release -- --version
+  windows:
+    name: windows
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Test
+        env:
+          RUSTFLAGS: '--cap-lints warn'
+        run: cargo test --target x86_64-pc-windows-msvc --workspace
+      - name: Build and Run
+        env:
+          RUSTFLAGS: '--cap-lints warn'
+        run: cargo run --target x86_64-pc-windows-msvc --release -- --version

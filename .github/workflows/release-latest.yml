@@ -1,0 +1,66 @@
+name: Release Latest
+
+on:
+    push:
+        branches:
+            - master
+jobs:
+  ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+        TARGET_RELEASE_ID: 18843342
+        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        REPOSITORY: "MitMaro/git-interactive-rebase-tool"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+#      - name: "System Setup"
+#        run: |
+#          apt-get update;
+#          apt-get --assume-yes -f install curl build-essential pkg-config;
+#        env:
+#          DEBIAN_FRONTEND: noninteractive
+#          TZ: "America/St_Johns"
+#      - uses: dtolnay/rust-toolchain@stable
+#      - uses: baptiste0928/cargo-install@v2
+#        with:
+#          crate: cargo-deb
+#      - name: "Build Deb"
+#        run: cargo +stable deb --output "target/debian/git-interactive-rebase-tool-ubuntu_amd64.deb" -- --features dev
+      - name: "Build"
+        run: cargo build --release
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "target/release/github-testing"
+          artifactContentType: "application/vnd.debian.binary-package"
+          tag: latest
+          replacesArtifacts: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          updateOnlyUnreleased: true
+#  macos:
+#    name: MacOS
+#    runs-on: macos-latest
+#    timeout-minutes: 10
+#    env:
+#        TARGET_RELEASE_ID: 18843342
+#        GITHUB_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+#        REPOSITORY: "MitMaro/git-interactive-rebase-tool"
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: dtolnay/rust-toolchain@nightly
+#        with:
+#          toolchain: nightly
+#      - name: "Build"
+#        run: cargo build --features dev --release
+#      - name: Upload
+#        env:
+#            FILE_PATH: "target/release/interactive-rebase-tool"
+#            ASSET_NAME: macos-interactive-rebase-tool
+#            CONTENT_TYPE: "application/x-mach-binary"
+#        run: "./.github/scripts/push-latest-release.bash"
